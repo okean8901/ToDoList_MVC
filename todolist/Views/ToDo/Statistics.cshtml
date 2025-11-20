@@ -1,0 +1,200 @@
+@model ToDoList.Services.ToDoStatistics
+
+@{
+    ViewData["Title"] = "Thống kê chi tiết";
+}
+
+<div class="container mt-4">
+    <div class="row mb-4">
+        <div class="col-md-12">
+            <h1 class="mb-4">
+                <i class="fas fa-chart-bar"></i> Thống kê chi tiết công việc
+            </h1>
+        </div>
+    </div>
+
+    @if (Model != null)
+    {
+        <div class="row">
+            <!-- Tổng số công việc -->
+            <div class="col-md-3 mb-4">
+                <div class="card bg-primary text-white">
+                    <div class="card-body">
+                        <div class="d-flex justify-content-between align-items-start">
+                            <div>
+                                <h6 class="card-title text-white-50">Tổng số công việc</h6>
+                                <h2 class="mb-0">@Model.TotalItems</h2>
+                            </div>
+                            <i class="fas fa-tasks fa-3x opacity-50"></i>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Công việc hoàn thành -->
+            <div class="col-md-3 mb-4">
+                <div class="card bg-success text-white">
+                    <div class="card-body">
+                        <div class="d-flex justify-content-between align-items-start">
+                            <div>
+                                <h6 class="card-title text-white-50">Hoàn thành</h6>
+                                <h2 class="mb-0">@Model.CompletedItems</h2>
+                            </div>
+                            <i class="fas fa-check-circle fa-3x opacity-50"></i>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Công việc chưa hoàn thành -->
+            <div class="col-md-3 mb-4">
+                <div class="card bg-warning text-white">
+                    <div class="card-body">
+                        <div class="d-flex justify-content-between align-items-start">
+                            <div>
+                                <h6 class="card-title text-white-50">Chưa hoàn thành</h6>
+                                <h2 class="mb-0">@Model.PendingItems</h2>
+                            </div>
+                            <i class="fas fa-hourglass-half fa-3x opacity-50"></i>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Công việc quá hạn -->
+            <div class="col-md-3 mb-4">
+                <div class="card bg-danger text-white">
+                    <div class="card-body">
+                        <div class="d-flex justify-content-between align-items-start">
+                            <div>
+                                <h6 class="card-title text-white-50">Quá hạn</h6>
+                                <h2 class="mb-0">@Model.OverdueItems</h2>
+                            </div>
+                            <i class="fas fa-exclamation-triangle fa-3x opacity-50"></i>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="row">
+            <!-- Tỷ lệ hoàn thành -->
+            <div class="col-md-6 mb-4">
+                <div class="card">
+                    <div class="card-header bg-light">
+                        <h5 class="mb-0"><i class="fas fa-percent"></i> Tỷ lệ hoàn thành</h5>
+                    </div>
+                    <div class="card-body">
+                        <div class="progress mb-3">
+                            <div class="progress-bar bg-success" role="progressbar" 
+                                 style="width: @Model.CompletionRate%;" 
+                                 aria-valuenow="@Model.CompletionRate" 
+                                 aria-valuemin="0" 
+                                 aria-valuemax="100">
+                                @Model.CompletionRate%
+                            </div>
+                        </div>
+                        <p class="text-muted mb-0">
+                            <small>@Model.CompletedItems của @Model.TotalItems công việc đã hoàn thành</small>
+                        </p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Ưu tiên cao -->
+            <div class="col-md-6 mb-4">
+                <div class="card">
+                    <div class="card-header bg-light">
+                        <h5 class="mb-0"><i class="fas fa-flag"></i> Công việc ưu tiên cao</h5>
+                    </div>
+                    <div class="card-body">
+                        <h3 class="mb-3">@Model.HighPriorityItems</h3>
+                        <p class="text-muted mb-0">
+                            <small>@if (Model.HighPriorityItems > 0)
+                            {
+                                <span class="badge bg-danger">Cần chú ý ngay</span>
+                            }
+                            else
+                            {
+                                <span class="badge bg-success">Không có công việc ưu tiên cao</span>
+                            }</small>
+                        </p>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="row">
+            <!-- Sắp tới hạn -->
+            <div class="col-md-6 mb-4">
+                <div class="card">
+                    <div class="card-header bg-light">
+                        <h5 class="mb-0"><i class="fas fa-calendar-alt"></i> Sắp tới hạn (7 ngày)</h5>
+                    </div>
+                    <div class="card-body">
+                        <h3 class="mb-3">@Model.DueSoonItems</h3>
+                        <p class="text-muted mb-0">
+                            <small>Công việc sẽ tới hạn trong 7 ngày tới</small>
+                        </p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Thời gian -->
+            <div class="col-md-6 mb-4">
+                <div class="card">
+                    <div class="card-header bg-light">
+                        <h5 class="mb-0"><i class="fas fa-clock"></i> Thời gian</h5>
+                    </div>
+                    <div class="card-body">
+                        <p class="mb-2">
+                            <strong>Công việc đầu tiên:</strong>
+                            <br />
+                            <small class="text-muted">
+                                @if (Model.EarliestCreatedDate.HasValue)
+                                {
+                                    @Model.EarliestCreatedDate.Value.ToString("dd/MM/yyyy HH:mm:ss")
+                                }
+                                else
+                                {
+                                    <span>Chưa có</span>
+                                }
+                            </small>
+                        </p>
+                        <p class="mb-0">
+                            <strong>Công việc gần đây nhất:</strong>
+                            <br />
+                            <small class="text-muted">
+                                @if (Model.LatestCreatedDate.HasValue)
+                                {
+                                    @Model.LatestCreatedDate.Value.ToString("dd/MM/yyyy HH:mm:ss")
+                                }
+                                else
+                                {
+                                    <span>Chưa có</span>
+                                }
+                            </small>
+                        </p>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="row mt-3">
+            <div class="col-md-12">
+                <a href="@Url.Action("Index", "ToDo")" class="btn btn-secondary me-2">
+                    <i class="fas fa-arrow-left"></i> Quay lại
+                </a>
+                <a href="@Url.Action("ExportCsv", "ToDo")" class="btn btn-primary">
+                    <i class="fas fa-download"></i> Xuất CSV
+                </a>
+            </div>
+        </div>
+    }
+    else
+    {
+        <div class="alert alert-info">
+            <i class="fas fa-info-circle"></i> Chưa có dữ liệu để hiển thị thống kê
+        </div>
+    }
+</div>

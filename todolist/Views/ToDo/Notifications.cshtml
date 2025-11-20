@@ -1,0 +1,116 @@
+@model List<ToDoList.Services.NotificationInfo>
+
+@{
+    ViewData["Title"] = "Thông báo và Reminder";
+}
+
+<div class="container mt-4">
+    <div class="row mb-4">
+        <div class="col-md-12">
+            <h1 class="mb-2">
+                <i class="fas fa-bell"></i> Thông báo và Reminder
+            </h1>
+            <p class="text-muted">Danh sách tất cả thông báo quan trọng về công việc của bạn</p>
+        </div>
+    </div>
+
+    @if (Model != null && Model.Count > 0)
+    {
+        <div class="row">
+            <div class="col-md-12">
+                @foreach (var notification in Model)
+                {
+                    var alertClass = notification.Level switch
+                    {
+                        "danger" => "alert-danger",
+                        "warning" => "alert-warning",
+                        _ => "alert-info"
+                    };
+
+                    var iconClass = notification.Type switch
+                    {
+                        "overdue" => "fa-exclamation-circle",
+                        "high_priority" => "fa-flag",
+                        "due_soon" => "fa-calendar-alt",
+                        "in_progress" => "fa-spinner",
+                        _ => "fa-bell"
+                    };
+
+                    <div class="alert alert-dismissible fade show @alertClass mb-3" role="alert">
+                        <div class="d-flex justify-content-between align-items-start">
+                            <div class="flex-grow-1">
+                                <h5 class="alert-heading mb-2">
+                                    <i class="fas @iconClass"></i> @notification.Title
+                                </h5>
+                                <p class="mb-0">@notification.Message</p>
+
+                                @if (notification.RelatedItem != null)
+                                {
+                                    <div class="mt-2 pt-2 border-top">
+                                        <small class="text-muted">
+                                            <strong>ID:</strong> @notification.RelatedItem.Id | 
+                                            <strong>Trạng thái:</strong> 
+                                            @switch (notification.RelatedItem.Status)
+                                            {
+                                                case ToDoList.Models.ToDoStatus.Pending:
+                                                    <span class="badge bg-secondary">Chưa bắt đầu</span>
+                                                    break;
+                                                case ToDoList.Models.ToDoStatus.InProgress:
+                                                    <span class="badge bg-primary">Đang thực hiện</span>
+                                                    break;
+                                                case ToDoList.Models.ToDoStatus.Completed:
+                                                    <span class="badge bg-success">Hoàn thành</span>
+                                                    break;
+                                            }
+                                        </small>
+                                    </div>
+
+                                    @if (notification.RelatedItem.DueDate.HasValue)
+                                    {
+                                        <div class="mt-2">
+                                            <small class="text-muted">
+                                                <i class="fas fa-calendar"></i> 
+                                                Hạn chót: <strong>@notification.RelatedItem.DueDate.Value.ToString("dd/MM/yyyy")</strong>
+                                            </small>
+                                        </div>
+                                    }
+                                }
+                            </div>
+                            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                        </div>
+                    </div>
+                }
+            </div>
+        </div>
+
+        <div class="row mt-4">
+            <div class="col-md-12">
+                <a href="@Url.Action("Index", "ToDo")" class="btn btn-secondary me-2">
+                    <i class="fas fa-arrow-left"></i> Quay lại
+                </a>
+            </div>
+        </div>
+    }
+    else
+    {
+        <div class="alert alert-success alert-dismissible fade show" role="alert">
+            <h4 class="alert-heading">
+                <i class="fas fa-check-circle"></i> Tuyệt vời!
+            </h4>
+            <p class="mb-0">Không có thông báo quan trọng. Tất cả công việc của bạn đều được kiểm soát tốt.</p>
+            <hr>
+            <p class="mb-0">
+                <a href="@Url.Action("Index", "ToDo")" class="alert-link">Quay lại danh sách công việc</a>
+            </p>
+        </div>
+    }
+</div>
+
+@section Scripts {
+    <script>
+        // Tự động refresh thông báo mỗi 5 phút
+        setInterval(function() {
+            location.reload();
+        }, 5 * 60 * 1000);
+    </script>
+}

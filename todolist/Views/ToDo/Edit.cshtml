@@ -1,0 +1,86 @@
+@model ToDoItemViewModel
+
+@{
+    ViewData["Title"] = "Cập nhật công việc";
+}
+
+<div class="row justify-content-center">
+    <div class="col-md-8">
+        <div class="card shadow-sm">
+            <div class="card-body p-4">
+                <!-- Tiêu đề -->
+                <h2 class="card-title mb-4">
+                    <i class="fas fa-edit text-primary"></i> Cập nhật công việc
+                </h2>
+
+                <!-- Form -->
+                <form asp-action="Edit" asp-route-id="@Model.Id" method="post" novalidate class="needs-validation">
+                    @Html.AntiForgeryToken()
+
+                    <!-- Tiêu đề -->
+                    <div class="mb-3">
+                        <label asp-for="Title" class="form-label">
+                            <span class="text-danger">*</span> Tiêu đề
+                        </label>
+                        <input asp-for="Title" type="text" class="form-control" required />
+                        <span asp-validation-for="Title" class="text-danger small"></span>
+                    </div>
+
+                    <!-- Mô tả -->
+                    <div class="mb-3">
+                        <label asp-for="Description" class="form-label">Mô tả chi tiết</label>
+                        <textarea asp-for="Description" rows="4" class="form-control"></textarea>
+                        <span asp-validation-for="Description" class="text-danger small"></span>
+                    </div>
+
+                    <!-- Trạng thái -->
+                    <div class="mb-3">
+                        <label asp-for="Status" class="form-label">
+                            <span class="text-danger">*</span> Trạng thái
+                        </label>
+                        <select asp-for="Status" class="form-select" required>
+                            <option value="0">Chưa làm</option>
+                            <option value="1">Đang làm</option>
+                            <option value="2">Hoàn thành</option>
+                        </select>
+                        <span asp-validation-for="Status" class="text-danger small"></span>
+                    </div>
+
+                    <!-- Ưu tiên -->
+                    <div class="mb-3">
+                        <label asp-for="Priority" class="form-label">
+                            <span class="text-danger">*</span> Mức độ ưu tiên
+                        </label>
+                        <select asp-for="Priority" class="form-select" required>
+                            <option value="0">Thấp</option>
+                            <option value="1">Trung bình</option>
+                            <option value="2">Cao</option>
+                        </select>
+                        <span asp-validation-for="Priority" class="text-danger small"></span>
+                    </div>
+
+                    <!-- Ngày hạn chót -->
+                    <div class="mb-4">
+                        <label asp-for="DueDate" class="form-label">Ngày hạn chót</label>
+                        <input asp-for="DueDate" type="date" class="form-control" />
+                        <span asp-validation-for="DueDate" class="text-danger small"></span>
+                    </div>
+
+                    <!-- Nút hành động -->
+                    <div class="d-flex gap-2">
+                        <button type="submit" class="btn btn-primary">
+                            <i class="fas fa-save"></i> Lưu thay đổi
+                        </button>
+                        <a asp-action="Index" class="btn btn-secondary">
+                            <i class="fas fa-times"></i> Hủy
+                        </a>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}
+}

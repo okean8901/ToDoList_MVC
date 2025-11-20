@@ -1,0 +1,104 @@
+﻿@{
+    ViewData["Title"] = "Trang chủ";
+}
+
+<!-- ===== Hero Section ===== -->
+<div class="row align-items-center mb-5">
+    <div class="col-lg-6">
+        <h1 class="display-4 fw-bold mb-4">
+            <i class="fas fa-tasks text-primary"></i> Quản lý Công việc Hiệu quả
+        </h1>
+        <p class="lead text-muted mb-4">
+            Ứng dụng web toàn diện giúp bạn:
+        </p>
+        <ul class="list-group list-group-flush mb-4">
+            <li class="list-group-item border-0 ps-0">
+                <i class="fas fa-check text-success"></i> Tạo và quản lý công việc cần làm
+            </li>
+            <li class="list-group-item border-0 ps-0">
+                <i class="fas fa-check text-success"></i> Ưu tiên công việc theo mức độ quan trọng
+            </li>
+            <li class="list-group-item border-0 ps-0">
+                <i class="fas fa-check text-success"></i> Lọc và tìm kiếm nâng cao
+            </li>
+            <li class="list-group-item border-0 ps-0">
+                <i class="fas fa-check text-success"></i> Theo dõi tiến độ hoàn thành
+            </li>
+        </ul>
+
+        @if (!User.Identity?.IsAuthenticated == true)
+        {
+            <div class="d-flex gap-3">
+                <a asp-controller="Auth" asp-action="Login" class="btn btn-primary btn-lg">
+                    <i class="fas fa-sign-in-alt"></i> Đăng nhập
+                </a>
+                <a asp-controller="Auth" asp-action="Register" class="btn btn-outline-primary btn-lg">
+                    <i class="fas fa-user-plus"></i> Đăng ký miễn phí
+                </a>
+            </div>
+        }
+        else
+        {
+            <a asp-controller="ToDo" asp-action="Index" class="btn btn-primary btn-lg">
+                <i class="fas fa-list"></i> Xem danh sách công việc
+            </a>
+        }
+    </div>
+
+    <div class="col-lg-6 text-center">
+        <div class="feature-box p-5 bg-light rounded-lg">
+            <i class="fas fa-tasks fa-10x text-primary opacity-50"></i>
+        </div>
+    </div>
+</div>
+
+<!-- ===== Features Section ===== -->
+<div class="row g-4 mt-5">
+    <div class="col-md-3">
+        <div class="card h-100 border-0 shadow-sm">
+            <div class="card-body text-center">
+                <i class="fas fa-plus-circle fa-3x text-primary mb-3"></i>
+                <h5 class="card-title">Tạo dễ dàng</h5>
+                <p class="card-text text-muted">
+                    Tạo công việc mới chỉ trong vài giây
+                </p>
+            </div>
+        </div>
+    </div>
+
+    <div class="col-md-3">
+        <div class="card h-100 border-0 shadow-sm">
+            <div class="card-body text-center">
+                <i class="fas fa-filter fa-3x text-success mb-3"></i>
+                <h5 class="card-title">Lọc nâng cao</h5>
+                <p class="card-text text-muted">
+                    Lọc theo trạng thái, ưu tiên, ngày hạn chót
+                </p>
+            </div>
+        </div>
+    </div>
+
+    <div class="col-md-3">
+        <div class="card h-100 border-0 shadow-sm">
+            <div class="card-body text-center">
+                <i class="fas fa-sync-alt fa-3x text-warning mb-3"></i>
+                <h5 class="card-title">Cập nhật nhanh</h5>
+                <p class="card-text text-muted">
+                    Sửa trạng thái công việc mà không cần tải lại
+                </p>
+            </div>
+        </div>
+    </div>
+
+    <div class="col-md-3">
+        <div class="card h-100 border-0 shadow-sm">
+            <div class="card-body text-center">
+                <i class="fas fa-lock fa-3x text-info mb-3"></i>
+                <h5 class="card-title">An toàn</h5>
+                <p class="card-text text-muted">
+                    Xác thực bảo mật và dữ liệu được mã hóa
+                </p>
+            </div>
+        </div>
+    </div>
+</div>

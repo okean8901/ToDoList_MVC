@@ -1,0 +1,48 @@
+@model ProfileViewModel
+
+@{
+    ViewData["Title"] = "Hồ sơ cá nhân";
+}
+
+<div class="row justify-content-center">
+    <div class="col-md-6">
+        <div class="card shadow-sm">
+            <div class="card-body p-4">
+                <!-- Tiêu đề -->
+                <h2 class="card-title mb-4">
+                    <i class="fas fa-id-card text-primary"></i> Hồ sơ cá nhân
+                </h2>
+
+                <!-- Thông tin người dùng -->
+                <div class="row mb-3">
+                    <div class="col-md-4 fw-bold">Email:</div>
+                    <div class="col-md-8">@Model.Email</div>
+                </div>
+
+                <div class="row mb-3">
+                    <div class="col-md-4 fw-bold">Tên:</div>
+                    <div class="col-md-8">@Model.FullName</div>
+                </div>
+
+                <div class="row mb-4">
+                    <div class="col-md-4 fw-bold">Ngày tạo:</div>
+                    <div class="col-md-8">@Model.CreatedAt.ToString("dd/MM/yyyy HH:mm")</div>
+                </div>
+
+                <hr />
+
+                <!-- Các nút hành động -->
+                <div class="d-flex gap-2">
+                    <a asp-controller="ToDo" asp-action="Index" class="btn btn-primary">
+                        <i class="fas fa-list"></i> Danh sách công việc
+                    </a>
+                    <form asp-controller="Auth" asp-action="Logout" method="post" style="display:inline;">
+                        <button type="submit" class="btn btn-danger">
+                            <i class="fas fa-sign-out-alt"></i> Đăng xuất
+                        </button>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

@@ -1,0 +1,169 @@
+@using Microsoft.AspNetCore.Identity
+@inject SignInManager<ApplicationUser> SignInManager
+@inject UserManager<ApplicationUser> UserManager
+
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>@ViewData["Title"] - Ứng dụng Quản lý Công việc</title>
+
+    <!-- ===== Bootstrap 5 CSS ===== -->
+    <link href="~/lib/bootstrap/dist/css/bootstrap.min.css" rel="stylesheet" />
+
+    <!-- ===== Font Awesome (cho icons) ===== -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" />
+
+    <!-- ===== Custom CSS ===== -->
+    <link rel="stylesheet" href="~/css/site.css" asp-append-version="true" />
+</head>
+<body>
+    <!-- ===== Navbar ===== -->
+    <nav class="navbar navbar-expand-lg navbar-dark bg-primary sticky-top">
+        <div class="container">
+            <!-- Logo/Brand -->
+            <a class="navbar-brand fw-bold" asp-controller="Home" asp-action="Index">
+                <i class="fas fa-tasks"></i> Quản lý Công việc
+            </a>
+
+            <!-- Toggler cho mobile -->
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+
+            <!-- Navigation links -->
+            <div class="collapse navbar-collapse" id="navbarNav">
+                <ul class="navbar-nav ms-auto">
+                    @if (SignInManager.IsSignedIn(User))
+                    {
+                        <!-- Nút cho người dùng đã đăng nhập -->
+                        <li class="nav-item">
+                            <a class="nav-link" asp-controller="ToDo" asp-action="Index">
+                                <i class="fas fa-list"></i> Danh sách công việc
+                            </a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link" asp-controller="ToDo" asp-action="Create">
+                                <i class="fas fa-plus"></i> Công việc mới
+                            </a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link" asp-controller="ToDo" asp-action="Notifications">
+                                <i class="fas fa-bell"></i> Thông báo
+                            </a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link" asp-controller="ToDo" asp-action="Statistics">
+                                <i class="fas fa-chart-bar"></i> Thống kê
+                            </a>
+                        </li>
+
+                        <!-- Dropdown cho profile -->
+                        <li class="nav-item dropdown">
+                            <a class="nav-link dropdown-toggle" href="#" id="userDropdown" role="button" data-bs-toggle="dropdown">
+                                <i class="fas fa-user-circle"></i> @UserManager.GetUserName(User)
+                            </a>
+                            <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="userDropdown">
+                                <li>
+                                    <a class="dropdown-item" asp-controller="Auth" asp-action="Profile">
+                                        <i class="fas fa-id-card"></i> Hồ sơ cá nhân
+                                    </a>
+                                </li>
+                                <li>
+                                    <a class="dropdown-item" asp-controller="ToDo" asp-action="ExportCsv">
+                                        <i class="fas fa-download"></i> Xuất CSV
+                                    </a>
+                                </li>
+                                <li><hr class="dropdown-divider"></li>
+                                <li>
+                                    <form asp-controller="Auth" asp-action="Logout" method="post" style="display:inline;">
+                                        <button type="submit" class="dropdown-item">
+                                            <i class="fas fa-sign-out-alt"></i> Đăng xuất
+                                        </button>
+                                    </form>
+                                </li>
+                            </ul>
+                        </li>
+                    }
+                    else
+                    {
+                        <!-- Nút cho người dùng chưa đăng nhập -->
+                        <li class="nav-item">
+                            <a class="nav-link" asp-controller="Auth" asp-action="Login">
+                                <i class="fas fa-sign-in-alt"></i> Đăng nhập
+                            </a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link" asp-controller="Auth" asp-action="Register">
+                                <i class="fas fa-user-plus"></i> Đăng ký
+                            </a>
+                        </li>
+                    }
+                </ul>
+            </div>
+        </div>
+    </nav>
+
+    <!-- ===== Main Content ===== -->
+    <main class="py-4">
+        <div class="container">
+            <!-- Hiển thị thông báo thành công -->
+            @if (TempData["SuccessMessage"] != null)
+            {
+                <div class="alert alert-success alert-dismissible fade show" role="alert">
+                    <i class="fas fa-check-circle"></i> @TempData["SuccessMessage"]
+                    <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+                </div>
+            }
+
+            <!-- Hiển thị thông báo lỗi -->
+            @if (TempData["ErrorMessage"] != null)
+            {
+                <div class="alert alert-danger alert-dismissible fade show" role="alert">
+                    <i class="fas fa-exclamation-circle"></i> @TempData["ErrorMessage"]
+                    <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+                </div>
+            }
+
+            <!-- Hiển thị lỗi validation -->
+            @if (!ViewData.ModelState.IsValid)
+            {
+                <div class="alert alert-warning" role="alert">
+                    <i class="fas fa-info-circle"></i> Vui lòng kiểm tra lại dữ liệu nhập vào
+                </div>
+            }
+
+            <!-- Nội dung chính -->
+            @RenderBody()
+        </div>
+    </main>
+
+    <!-- ===== Footer ===== -->
+    <footer class="bg-light border-top mt-5 py-4">
+        <div class="container text-center text-muted">
+            <p class="mb-0">
+                &copy; 2025 Ứng dụng Quản lý Công việc - Xây dựng bằng ASP.NET Core 10
+            </p>
+        </div>
+    </footer>
+
+    <!-- ===== Bootstrap 5 JS ===== -->
+    <script src="~/lib/bootstrap/dist/js/bootstrap.bundle.min.js"></script>
+
+    <!-- ===== jQuery (bắt buộc cho validation) ===== -->
+    <script src="~/lib/jquery/dist/jquery.min.js"></script>
+
+    <!-- ===== jQuery Validation ===== -->
+    <script src="~/lib/jquery-validation/jquery.validate.min.js"></script>
+
+    <!-- ===== jQuery Validation Unobtrusive ===== -->
+    <script src="~/lib/jquery-validation-unobtrusive/jquery.validate.unobtrusive.min.js"></script>
+
+    <!-- ===== Custom JS ===== -->
+    <script src="~/js/site.js" asp-append-version="true"></script>
+
+    <!-- ===== Render script section ===== -->
+    @await RenderSectionAsync("Scripts", required: false)
+</body>
+</html>

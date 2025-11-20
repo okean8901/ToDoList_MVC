@@ -1,0 +1,71 @@
+{
+  "Version": 1,
+  "WorkspaceRootPath": "D:\\codec#\\todolist\\",
+  "Documents": [
+    {
+      "AbsoluteMoniker": "D:0:0:{D78B980A-4E3B-42A3-B681-ED75F51464B4}|todolist\\todolist.csproj|d:\\codec#\\todolist\\todolist\\services\\inotificationservice.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{D78B980A-4E3B-42A3-B681-ED75F51464B4}|todolist\\todolist.csproj|solutionrelative:todolist\\services\\inotificationservice.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{D78B980A-4E3B-42A3-B681-ED75F51464B4}|todolist\\todolist.csproj|d:\\codec#\\todolist\\todolist\\models\\auth\\authviewmodels.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{D78B980A-4E3B-42A3-B681-ED75F51464B4}|todolist\\todolist.csproj|solutionrelative:todolist\\models\\auth\\authviewmodels.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{D78B980A-4E3B-42A3-B681-ED75F51464B4}|todolist\\todolist.csproj|d:\\codec#\\todolist\\todolist\\models\\viewmodels\\todoviewmodels.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{D78B980A-4E3B-42A3-B681-ED75F51464B4}|todolist\\todolist.csproj|solutionrelative:todolist\\models\\viewmodels\\todoviewmodels.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    }
+  ],
+  "DocumentGroupContainers": [
+    {
+      "Orientation": 0,
+      "VerticalTabListWidth": 256,
+      "DocumentGroups": [
+        {
+          "DockedWidth": 200,
+          "SelectedChildIndex": 0,
+          "Children": [
+            {
+              "$type": "Document",
+              "DocumentIndex": 0,
+              "Title": "INotificationService.cs",
+              "DocumentMoniker": "D:\\codec#\\todolist\\todolist\\Services\\INotificationService.cs",
+              "RelativeDocumentMoniker": "todolist\\Services\\INotificationService.cs",
+              "ToolTip": "D:\\codec#\\todolist\\todolist\\Services\\INotificationService.cs",
+              "RelativeToolTip": "todolist\\Services\\INotificationService.cs",
+              "ViewState": "AgIAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2025-11-20T03:00:49.79Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 1,
+              "Title": "AuthViewModels.cs",
+              "DocumentMoniker": "D:\\codec#\\todolist\\todolist\\Models\\Auth\\AuthViewModels.cs",
+              "RelativeDocumentMoniker": "todolist\\Models\\Auth\\AuthViewModels.cs",
+              "ToolTip": "D:\\codec#\\todolist\\todolist\\Models\\Auth\\AuthViewModels.cs",
+              "RelativeToolTip": "todolist\\Models\\Auth\\AuthViewModels.cs",
+              "ViewState": "AgIAAAMAAAAAAAAAAAAAABIAAAAAAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2025-11-20T03:00:32.883Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 2,
+              "Title": "ToDoViewModels.cs",
+              "DocumentMoniker": "D:\\codec#\\todolist\\todolist\\Models\\ViewModels\\ToDoViewModels.cs",
+              "RelativeDocumentMoniker": "todolist\\Models\\ViewModels\\ToDoViewModels.cs",
+              "ToolTip": "D:\\codec#\\todolist\\todolist\\Models\\ViewModels\\ToDoViewModels.cs",
+              "RelativeToolTip": "todolist\\Models\\ViewModels\\ToDoViewModels.cs",
+              "ViewState": "AgIAAAMAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2025-11-20T03:00:24.03Z",
+              "EditorCaption": ""
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}

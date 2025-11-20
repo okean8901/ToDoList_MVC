@@ -1,0 +1,382 @@
+@model ToDoListViewModel
+
+@{
+    ViewData["Title"] = "Danh sách công việc";
+}
+
+<div class="row mb-4">
+    <div class="col-md-8">
+        <h1 class="mb-0">
+            <i class="fas fa-tasks text-primary"></i> Danh sách công việc
+        </h1>
+    </div>
+    <div class="col-md-4 text-end">
+        <a asp-controller="ToDo" asp-action="Create" class="btn btn-success">
+            <i class="fas fa-plus"></i> Công việc mới
+        </a>
+    </div>
+</div>
+
+<!-- ===== Thống kê ===== -->
+<div class="row g-3 mb-4">
+    <div class="col-md-3">
+        <div class="card border-0 bg-light">
+            <div class="card-body">
+                <h6 class="card-title text-muted mb-2">Tổng cộng</h6>
+                <h3 class="mb-0 text-primary">@Model.Items.Count</h3>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-3">
+        <div class="card border-0 bg-light">
+            <div class="card-body">
+                <h6 class="card-title text-muted mb-2">Quá hạn</h6>
+                <h3 class="mb-0 text-danger">@Model.OverdueCount</h3>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-3">
+        <div class="card border-0 bg-light">
+            <div class="card-body">
+                <h6 class="card-title text-muted mb-2">Sắp hết hạn</h6>
+                <h3 class="mb-0 text-warning">@Model.DueSoonCount</h3>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-3">
+        <div class="card border-0 bg-light">
+            <div class="card-body">
+                <h6 class="card-title text-muted mb-2">Hoàn thành</h6>
+                <h3 class="mb-0 text-success">@Model.StatusCounts?[ToDoStatus.Completed] ?? 0</h3>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- ===== Bộ lọc nâng cao ===== -->
+<div class="card shadow-sm mb-4">
+    <div class="card-header bg-light">
+        <h5 class="mb-0">
+            <i class="fas fa-filter"></i> Bộ lọc nâng cao
+        </h5>
+    </div>
+    <div class="card-body">
+        <form asp-action="Index" method="get" class="row g-3">
+            <!-- Tìm kiếm -->
+            <div class="col-md-3">
+                <label class="form-label">Tìm kiếm</label>
+                <input type="text" name="searchText" class="form-control" 
+                       value="@Model.CurrentFilter?.SearchText" 
+                       placeholder="Tìm kiếm tiêu đề hoặc mô tả" />
+            </div>
+
+            <!-- Trạng thái -->
+            <div class="col-md-3">
+                <label class="form-label">Trạng thái</label>
+                <select name="status" class="form-select">
+                    <option value="">-- Tất cả --</option>
+                    <option value="0" selected="@(Model.CurrentFilter?.Status == ToDoStatus.Pending)">
+                        Chưa làm
+                    </option>
+                    <option value="1" selected="@(Model.CurrentFilter?.Status == ToDoStatus.InProgress)">
+                        Đang làm
+                    </option>
+                    <option value="2" selected="@(Model.CurrentFilter?.Status == ToDoStatus.Completed)">
+                        Hoàn thành
+                    </option>
+                </select>
+            </div>
+
+            <!-- Ưu tiên -->
+            <div class="col-md-3">
+                <label class="form-label">Ưu tiên</label>
+                <select name="priority" class="form-select">
+                    <option value="">-- Tất cả --</option>
+                    <option value="0" selected="@(Model.CurrentFilter?.Priority == Priority.Low)">
+                        Thấp
+                    </option>
+                    <option value="1" selected="@(Model.CurrentFilter?.Priority == Priority.Medium)">
+                        Trung bình
+                    </option>
+                    <option value="2" selected="@(Model.CurrentFilter?.Priority == Priority.High)">
+                        Cao
+                    </option>
+                </select>
+            </div>
+
+            <!-- Sắp xếp -->
+            <div class="col-md-3">
+                <label class="form-label">Sắp xếp</label>
+                <select name="sortBy" class="form-select">
+                    <option value="CreatedAt" selected="@(Model.CurrentFilter?.SortBy == "CreatedAt")">
+                        Ngày tạo
+                    </option>
+                    <option value="DueDate" selected="@(Model.CurrentFilter?.SortBy == "DueDate")">
+                        Ngày hạn chót
+                    </option>
+                    <option value="Priority" selected="@(Model.CurrentFilter?.SortBy == "Priority")">
+                        Mức độ ưu tiên
+                    </option>
+                    <option value="Title" selected="@(Model.CurrentFilter?.SortBy == "Title")">
+                        Tiêu đề
+                    </option>
+                </select>
+            </div>
+
+            <!-- Ngày hạn chót từ -->
+            <div class="col-md-3">
+                <label class="form-label">Ngày hạn chót từ</label>
+                <input type="date" name="dueDateFrom" class="form-control" 
+                       value="@Model.CurrentFilter?.DueDateFrom?.ToString("yyyy-MM-dd")" />
+            </div>
+
+            <!-- Ngày hạn chót đến -->
+            <div class="col-md-3">
+                <label class="form-label">Ngày hạn chót đến</label>
+                <input type="date" name="dueDateTo" class="form-control" 
+                       value="@Model.CurrentFilter?.DueDateTo?.ToString("yyyy-MM-dd")" />
+            </div>
+
+            <!-- Chỉ hoàn thành -->
+            <div class="col-md-3">
+                <label class="form-label">Lọc thêm</label>
+                <select name="isCompleted" class="form-select">
+                    <option value="">-- Tất cả công việc --</option>
+                    <option value="true" selected="@(Model.CurrentFilter?.IsCompleted == true)">
+                        Chỉ công việc hoàn thành
+                    </option>
+                    <option value="false" selected="@(Model.CurrentFilter?.IsCompleted == false)">
+                        Chỉ công việc chưa hoàn thành
+                    </option>
+                </select>
+            </div>
+
+            <!-- Nút áp dụng -->
+            <div class="col-12">
+                <button type="submit" class="btn btn-primary">
+                    <i class="fas fa-search"></i> Tìm kiếm
+                </button>
+                <a asp-action="Index" class="btn btn-secondary">
+                    <i class="fas fa-redo"></i> Đặt lại
+                </a>
+            </div>
+        </form>
+    </div>
+</div>
+
+<!-- ===== Danh sách công việc ===== -->
+@if (Model.Items.Count == 0)
+{
+    <div class="alert alert-info text-center py-5" role="alert">
+        <i class="fas fa-info-circle fa-3x mb-3"></i>
+        <p class="mb-0">Không có công việc nào. <a asp-action="Create">Tạo công việc mới</a></p>
+    </div>
+}
+else
+{
+    <div class="table-responsive">
+        <table class="table table-hover align-middle">
+            <thead class="table-light">
+                <tr>
+                    <th>Tiêu đề</th>
+                    <th>Mô tả</th>
+                    <th>Trạng thái</th>
+                    <th>Ưu tiên</th>
+                    <th>Hạn chót</th>
+                    <th>Ngày tạo</th>
+                    <th class="text-end">Hành động</th>
+                </tr>
+            </thead>
+            <tbody>
+                @foreach (var item in Model.Items)
+                {
+                    <!-- CSS class theo trạng thái -->
+                    var rowClass = item.Status == ToDoStatus.Completed ? "table-success" : 
+                                   item.Status == ToDoStatus.InProgress ? "table-info" : "";
+
+                    <tr class="@rowClass">
+                        <!-- Tiêu đề -->
+                        <td>
+                            <strong>@item.Title</strong>
+                        </td>
+
+                        <!-- Mô tả -->
+                        <td class="text-muted small">
+                            @if (!string.IsNullOrEmpty(item.Description))
+                            {
+                                @(item.Description.Length > 50 ? item.Description.Substring(0, 50) + "..." : item.Description)
+                            }
+                            else
+                            {
+                                <span class="text-muted">-</span>
+                            }
+                        </td>
+
+                        <!-- Trạng thái -->
+                        <td>
+                            @switch (item.Status)
+                            {
+                                case ToDoStatus.Pending:
+                                    <span class="badge bg-secondary">
+                                        <i class="fas fa-clock"></i> Chưa làm
+                                    </span>
+                                    break;
+                                case ToDoStatus.InProgress:
+                                    <span class="badge bg-info">
+                                        <i class="fas fa-hourglass-half"></i> Đang làm
+                                    </span>
+                                    break;
+                                case ToDoStatus.Completed:
+                                    <span class="badge bg-success">
+                                        <i class="fas fa-check"></i> Hoàn thành
+                                    </span>
+                                    break;
+                            }
+                        </td>
+
+                        <!-- Ưu tiên -->
+                        <td>
+                            @switch (item.Priority)
+                            {
+                                case Priority.Low:
+                                    <span class="badge bg-success">Thấp</span>
+                                    break;
+                                case Priority.Medium:
+                                    <span class="badge bg-warning">Trung bình</span>
+                                    break;
+                                case Priority.High:
+                                    <span class="badge bg-danger">Cao</span>
+                                    break;
+                            }
+                        </td>
+
+                        <!-- Hạn chót -->
+                        <td>
+                            @if (item.DueDate.HasValue)
+                            {
+                                var daysLeft = (item.DueDate.Value.Date - DateTime.Today).Days;
+                                var dueClass = daysLeft < 0 ? "text-danger fw-bold" : 
+                                              daysLeft <= 7 ? "text-warning fw-bold" : "";
+
+                                <span class="@dueClass">
+                                    @item.DueDate.Value.ToString("dd/MM/yyyy")
+                                </span>
+
+                                @if (daysLeft < 0)
+                                {
+                                    <span class="badge bg-danger">Quá hạn @Math.Abs(daysLeft) ngày</span>
+                                }
+                                else if (daysLeft == 0)
+                                {
+                                    <span class="badge bg-danger">Hôm nay</span>
+                                }
+                                else if (daysLeft <= 7)
+                                {
+                                    <span class="badge bg-warning">@daysLeft ngày</span>
+                                }
+                            }
+                            else
+                            {
+                                <span class="text-muted">-</span>
+                            }
+                        </td>
+
+                        <!-- Ngày tạo -->
+                        <td class="small text-muted">
+                            @item.CreatedAt.ToString("dd/MM/yyyy")
+                        </td>
+
+                        <!-- Hành động -->
+                        <td class="text-end">
+                            <div class="btn-group" role="group">
+                                <!-- Nút sửa -->
+                                <a asp-action="Edit" asp-route-id="@item.Id" 
+                                   class="btn btn-sm btn-outline-primary" title="Sửa">
+                                    <i class="fas fa-edit"></i>
+                                </a>
+
+                                <!-- Nút hoàn thành -->
+                                @if (item.Status != ToDoStatus.Completed)
+                                {
+                                    <button type="button" class="btn btn-sm btn-outline-success" 
+                                            data-item-id="@item.Id" 
+                                            onclick="markComplete(@item.Id)" 
+                                            title="Đánh dấu hoàn thành">
+                                        <i class="fas fa-check"></i>
+                                    </button>
+                                }
+
+                                <!-- Nút xóa -->
+                                <a asp-action="DeleteConfirm" asp-route-id="@item.Id" 
+                                   class="btn btn-sm btn-outline-danger" title="Xóa">
+                                    <i class="fas fa-trash"></i>
+                                </a>
+                            </div>
+                        </td>
+                    </tr>
+                }
+            </tbody>
+        </table>
+    </div>
+}
+
+@section Scripts {
+    <script>
+        function markComplete(id) {
+            // Lấy CSRF token từ form hoặc cookie
+            const token = document.querySelector('input[name="__RequestVerificationToken"]')?.value 
+                       || getCookie('__RequestVerificationToken')
+                       || '';
+
+            // Tạo FormData để gửi POST
+            const formData = new FormData();
+            if (token) {
+                formData.append('__RequestVerificationToken', token);
+            }
+
+            // Gửi POST request để đánh dấu hoàn thành
+            fetch(`/todo/mark-complete/${id}`, {
+                method: 'POST',
+                headers: {
+                    'X-CSRF-TOKEN': token
+                },
+                body: formData
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.success) {
+                    // Hiển thị thông báo thành công
+                    const alertDiv = document.createElement('div');
+                    alertDiv.className = 'alert alert-success alert-dismissible fade show';
+                    alertDiv.innerHTML = `
+                        <i class="fas fa-check-circle"></i> ${data.message}
+                        <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+                    `;
+                    document.querySelector('.container').prepend(alertDiv);
+                    
+                    // Tải lại trang sau 1 giây
+                    setTimeout(() => location.reload(), 1000);
+                } else {
+                    alert('Lỗi: ' + (data.message || 'Không thể hoàn thành công việc'));
+                }
+            })
+            .catch(error => {
+                console.error('Error:', error);
+                alert('Có lỗi xảy ra: ' + error.message);
+            });
+        }
+
+        // Hàm lấy cookie
+        function getCookie(name) {
+            const nameEQ = name + "=";
+            const cookies = document.cookie.split(';');
+            for (let i = 0; i < cookies.length; i++) {
+                let cookie = cookies[i].trim();
+                if (cookie.indexOf(nameEQ) === 0) {
+                    return decodeURIComponent(cookie.substring(nameEQ.length));
+                }
+            }
+            return '';
+        }
+    </script>
+}

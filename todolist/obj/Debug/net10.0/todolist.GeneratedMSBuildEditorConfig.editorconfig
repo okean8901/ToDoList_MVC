@@ -42,6 +42,18 @@ build_metadata.AdditionalFiles.CssScope =
 build_metadata.AdditionalFiles.TargetPath = Vmlld3NcQXV0aFxSZWdpc3Rlci5jc2h0bWw=
 build_metadata.AdditionalFiles.CssScope = 
 
+[D:/codec\#/ToDoList/todolist/Views/Category/Create.cshtml]
+build_metadata.AdditionalFiles.TargetPath = Vmlld3NcQ2F0ZWdvcnlcQ3JlYXRlLmNzaHRtbA==
+build_metadata.AdditionalFiles.CssScope = 
+
+[D:/codec\#/ToDoList/todolist/Views/Category/Edit.cshtml]
+build_metadata.AdditionalFiles.TargetPath = Vmlld3NcQ2F0ZWdvcnlcRWRpdC5jc2h0bWw=
+build_metadata.AdditionalFiles.CssScope = 
+
+[D:/codec\#/ToDoList/todolist/Views/Category/Index.cshtml]
+build_metadata.AdditionalFiles.TargetPath = Vmlld3NcQ2F0ZWdvcnlcSW5kZXguY3NodG1s
+build_metadata.AdditionalFiles.CssScope = 
+
 [D:/codec\#/ToDoList/todolist/Views/Home/Index.cshtml]
 build_metadata.AdditionalFiles.TargetPath = Vmlld3NcSG9tZVxJbmRleC5jc2h0bWw=
 build_metadata.AdditionalFiles.CssScope = 
@@ -56,6 +68,14 @@ build_metadata.AdditionalFiles.CssScope =
 
 [D:/codec\#/ToDoList/todolist/Views/Shared/_ValidationScriptsPartial.cshtml]
 build_metadata.AdditionalFiles.TargetPath = Vmlld3NcU2hhcmVkXF9WYWxpZGF0aW9uU2NyaXB0c1BhcnRpYWwuY3NodG1s
+build_metadata.AdditionalFiles.CssScope = 
+
+[D:/codec\#/ToDoList/todolist/Views/ToDo/Audit.cshtml]
+build_metadata.AdditionalFiles.TargetPath = Vmlld3NcVG9Eb1xBdWRpdC5jc2h0bWw=
+build_metadata.AdditionalFiles.CssScope = 
+
+[D:/codec\#/ToDoList/todolist/Views/ToDo/Calendar.cshtml]
+build_metadata.AdditionalFiles.TargetPath = Vmlld3NcVG9Eb1xDYWxlbmRhci5jc2h0bWw=
 build_metadata.AdditionalFiles.CssScope = 
 
 [D:/codec\#/ToDoList/todolist/Views/ToDo/Create.cshtml]
@@ -80,6 +100,10 @@ build_metadata.AdditionalFiles.CssScope =
 
 [D:/codec\#/ToDoList/todolist/Views/ToDo/Statistics.cshtml]
 build_metadata.AdditionalFiles.TargetPath = Vmlld3NcVG9Eb1xTdGF0aXN0aWNzLmNzaHRtbA==
+build_metadata.AdditionalFiles.CssScope = 
+
+[D:/codec\#/ToDoList/todolist/Views/ToDo/StatisticsChart.cshtml]
+build_metadata.AdditionalFiles.TargetPath = Vmlld3NcVG9Eb1xTdGF0aXN0aWNzQ2hhcnQuY3NodG1s
 build_metadata.AdditionalFiles.CssScope = 
 
 [D:/codec\#/ToDoList/todolist/Views/_ViewImports.cshtml]

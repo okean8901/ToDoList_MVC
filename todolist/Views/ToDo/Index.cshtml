@@ -14,6 +14,9 @@
         <a asp-controller="ToDo" asp-action="Create" class="btn btn-success">
             <i class="fas fa-plus"></i> Công việc mới
         </a>
+        <a asp-controller="Category" asp-action="Index" class="btn btn-info ms-2">
+            <i class="fas fa-folder"></i> Danh mục
+        </a>
     </div>
 </div>
 
@@ -68,6 +71,28 @@
                 <input type="text" name="searchText" class="form-control" 
                        value="@Model.CurrentFilter?.SearchText" 
                        placeholder="Tìm kiếm tiêu đề hoặc mô tả" />
+            </div>
+
+            <!-- Lọc theo danh mục -->
+            <div class="col-md-3">
+                <label class="form-label">Danh mục</label>
+                <select name="categoryId" class="form-select">
+                    <option value="">-- Tất cả --</option>
+                    @{
+                        var queryCatId = Context.Request.Query["categoryId"].FirstOrDefault();
+                        var categories = Model.Items.Where(i => i.Category != null)
+                            .Select(i => i.Category)
+                            .DistinctBy(c => c?.Id)
+                            .ToList();
+                        foreach (var cat in categories)
+                        {
+                            if (cat == null) continue;
+                            var selected = queryCatId == cat.Id.ToString() ? "selected=\"selected\"" : "";
+                            var option = $"<option value=\"{cat.Id}\" style=\"color:{cat.Color}\" {selected}>{cat.Name}</option>";
+                            @Html.Raw(option)
+                        }
+                    }
+                </select>
             </div>
 
             <!-- Trạng thái -->
@@ -180,6 +205,7 @@ else
                 <tr>
                     <th>Tiêu đề</th>
                     <th>Mô tả</th>
+                    <th>Danh mục</th>
                     <th>Trạng thái</th>
                     <th>Ưu tiên</th>
                     <th>Hạn chót</th>
@@ -205,6 +231,20 @@ else
                             @if (!string.IsNullOrEmpty(item.Description))
                             {
                                 @(item.Description.Length > 50 ? item.Description.Substring(0, 50) + "..." : item.Description)
+                            }
+                            else
+                            {
+                                <span class="text-muted">-</span>
+                            }
+                        </td>
+
+                        <!-- Danh mục -->
+                        <td>
+                            @if (item.Category != null)
+                            {
+                                <span class="badge" style="background-color:@item.Category.Color; color:white;">
+                                    <i class="fas fa-folder"></i> @item.Category.Name
+                                </span>
                             }
                             else
                             {
@@ -310,6 +350,12 @@ else
                                 <a asp-action="DeleteConfirm" asp-route-id="@item.Id" 
                                    class="btn btn-sm btn-outline-danger" title="Xóa">
                                     <i class="fas fa-trash"></i>
+                                </a>
+
+                                <!-- Nút xem lịch sử -->
+                                <a asp-action="Audit" asp-route-id="@item.Id"
+                                   class="btn btn-sm btn-outline-secondary" title="Xem lịch sử">
+                                    <i class="fas fa-history"></i>
                                 </a>
                             </div>
                         </td>

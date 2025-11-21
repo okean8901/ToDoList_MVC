@@ -27,6 +27,22 @@
                         <span asp-validation-for="Title" class="text-danger small"></span>
                     </div>
 
+                    <!-- Chọn danh mục -->
+                    <div class="mb-3">
+                        <label asp-for="CategoryId" class="form-label">Danh mục</label>
+                        <select asp-for="CategoryId" class="form-select">
+                            <option value="">-- Không chọn --</option>
+                            @if (Model.Categories != null)
+                            {
+                                foreach (var cat in Model.Categories)
+                                {
+                                    <option value="@cat.Id" style="color:@cat.Color">@cat.Name</option>
+                                }
+                            }
+                        </select>
+                        <span asp-validation-for="CategoryId" class="text-danger small"></span>
+                    </div>
+
                     <!-- Mô tả -->
                     <div class="mb-3">
                         <label asp-for="Description" class="form-label">Mô tả chi tiết</label>

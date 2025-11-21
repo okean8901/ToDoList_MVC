@@ -26,6 +26,12 @@ namespace ToDoList.Services
 
             var result = toDoItems.AsEnumerable();
 
+            // ===== Lọc theo danh mục =====
+            if (criteria.CategoryId.HasValue)
+            {
+                result = result.Where(t => t.CategoryId == criteria.CategoryId.Value);
+            }
+
             // ===== Lọc theo trạng thái =====
             if (criteria.Status.HasValue)
             {

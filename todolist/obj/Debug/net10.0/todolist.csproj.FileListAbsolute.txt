@@ -297,3 +297,4 @@ D:\codec#\ToDoList\todolist\obj\Debug\net10.0\refint\todolist.dll
 D:\codec#\ToDoList\todolist\obj\Debug\net10.0\todolist.pdb
 D:\codec#\ToDoList\todolist\obj\Debug\net10.0\todolist.genruntimeconfig.cache
 D:\codec#\ToDoList\todolist\obj\Debug\net10.0\ref\todolist.dll
+D:\codec#\ToDoList\todolist\obj\Debug\net10.0\todolist.sourcelink.json

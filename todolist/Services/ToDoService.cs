@@ -36,6 +36,15 @@ namespace ToDoList.Services
             toDoItem.CreatedAt = DateTime.UtcNow;
             toDoItem.UpdatedAt = DateTime.UtcNow;
 
+            // Nếu chưa có Order, đặt ở cuối danh sách của người dùng
+            if (!toDoItem.Order.HasValue)
+            {
+                var maxOrder = await _context.ToDoItems
+                    .Where(t => t.UserId == toDoItem.UserId && t.Order.HasValue)
+                    .MaxAsync(t => (int?)t.Order) ?? 0;
+                toDoItem.Order = maxOrder + 1;
+            }
+
             // Thêm vào DbSet
             _context.ToDoItems.Add(toDoItem);
 
@@ -94,6 +103,43 @@ namespace ToDoList.Services
             // Lưu thay đổi
             await _context.SaveChangesAsync();
 
+            return true;
+        }
+
+        /// <summary>
+        /// Cập nhật thứ tự (Order) cho nhiều công việc
+        /// </summary>
+        public async Task UpdateOrderAsync(List<int> orderedIds, string userId)
+        {
+            var items = await _context.ToDoItems
+                .Where(t => orderedIds.Contains(t.Id) && t.UserId == userId)
+                .ToListAsync();
+
+            for (int i = 0; i < orderedIds.Count; i++)
+            {
+                var id = orderedIds[i];
+                var item = items.FirstOrDefault(t => t.Id == id);
+                if (item != null)
+                {
+                    item.Order = i + 1;
+                    _context.ToDoItems.Update(item);
+                }
+            }
+
+            await _context.SaveChangesAsync();
+        }
+
+        /// <summary>
+        /// Toggle IsStarred cho một công việc
+        /// </summary>
+        public async Task<bool> ToggleStarAsync(int id, string userId)
+        {
+            var item = await _context.ToDoItems.FirstOrDefaultAsync(t => t.Id == id && t.UserId == userId);
+            if (item == null) return false;
+            item.IsStarred = !item.IsStarred;
+            item.UpdatedAt = DateTime.UtcNow;
+            _context.ToDoItems.Update(item);
+            await _context.SaveChangesAsync();
             return true;
         }
 

@@ -60,5 +60,15 @@ namespace ToDoList.Services
         /// <param name="userId">ID của người dùng (để xác thực quyền)</param>
         /// <returns>Số công việc đã xóa</returns>
         Task<int> DeleteMultipleAsync(List<int> ids, string userId);
+
+        /// <summary>
+        /// Cập nhật thứ tự cho danh sách công việc
+        /// </summary>
+        Task UpdateOrderAsync(List<int> orderedIds, string userId);
+
+        /// <summary>
+        /// Bật/tắt đánh dấu quan trọng
+        /// </summary>
+        Task<bool> ToggleStarAsync(int id, string userId);
     }
 }

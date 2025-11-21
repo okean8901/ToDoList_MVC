@@ -11,6 +11,8 @@ namespace ToDoList.Services
     /// </summary>
     public class ToDoFilterCriteria
     {
+        /// <summary>Lọc theo danh mục</summary>
+        public int? CategoryId { get; set; }
         /// <summary>Lọc theo trạng thái</summary>
         public ToDoStatus? Status { get; set; }
 

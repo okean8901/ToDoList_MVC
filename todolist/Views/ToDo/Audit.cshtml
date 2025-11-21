@@ -1,0 +1,42 @@
+@model IEnumerable<ToDoList.Models.AuditLog>
+
+@{
+    ViewData["Title"] = "Lịch sử thay đổi";
+}
+
+<h2>Lịch sử thay đổi</h2>
+
+<p>
+    <a asp-action="Index">Quay lại danh sách</a>
+</p>
+
+<table class="table table-striped">
+    <thead>
+        <tr>
+            <th>Thời gian</th>
+            <th>Hành động</th>
+            <th>Người thực hiện</th>
+            <th>Chi tiết</th>
+        </tr>
+    </thead>
+    <tbody>
+    @foreach (var log in Model)
+    {
+        <tr>
+            <td>@log.Timestamp.ToLocalTime().ToString("yyyy-MM-dd HH:mm")</td>
+            <td>@log.Action</td>
+            <td>@log.UserId</td>
+            <td>
+                @if (!string.IsNullOrEmpty(log.Changes))
+                {
+                    <pre style="white-space:pre-wrap;">@Html.Raw(System.Text.Json.JsonSerializer.Serialize(System.Text.Json.JsonSerializer.Deserialize<object>(log.Changes), new System.Text.Json.JsonSerializerOptions { WriteIndented = true }))</pre>
+                }
+                else
+                {
+                    <em>Không có chi tiết</em>
+                }
+            </td>
+        </tr>
+    }
+    </tbody>
+</table>

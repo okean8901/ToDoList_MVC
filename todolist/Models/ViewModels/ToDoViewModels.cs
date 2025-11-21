@@ -33,6 +33,12 @@ namespace ToDoList.Models.ViewModels
         /// <summary>Ngày hạn chót</summary>
         [DataType(DataType.Date)]
         public DateTime? DueDate { get; set; }
+
+        /// <summary>Chọn danh mục cho công việc</summary>
+        public int? CategoryId { get; set; }
+
+        /// <summary>Danh sách danh mục để hiển thị trong dropdown</summary>
+        public List<Category>? Categories { get; set; }
     }
 
     /// <summary>

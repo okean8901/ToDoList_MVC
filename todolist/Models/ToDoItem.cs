@@ -56,6 +56,16 @@ namespace ToDoList.Models
         public DateTime UpdatedAt { get; set; } = DateTime.UtcNow;
 
         /// <summary>
+        /// Trường dùng để sắp xếp thủ công (giá trị càng nhỏ thì hiển thị càng lên trên)
+        /// </summary>
+        public int? Order { get; set; }
+
+        /// <summary>
+        /// Đánh dấu công việc quan trọng
+        /// </summary>
+        public bool IsStarred { get; set; } = false;
+
+        /// <summary>
         /// ID của người dùng sở hữu công việc này (khóa ngoài)
         /// </summary>
         [Required]
@@ -66,6 +76,17 @@ namespace ToDoList.Models
         /// </summary>
         [ForeignKey("UserId")]
         public virtual ApplicationUser? User { get; set; }
+
+        /// <summary>
+        /// ID danh mục của công việc (khóa ngoài)
+        /// </summary>
+        public int? CategoryId { get; set; }
+
+        /// <summary>
+        /// Tham chiếu đến danh mục của công việc
+        /// </summary>
+        [ForeignKey("CategoryId")]
+        public virtual Category? Category { get; set; }
     }
 
     /// <summary>

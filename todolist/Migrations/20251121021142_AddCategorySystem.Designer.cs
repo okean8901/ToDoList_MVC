@@ -3,6 +3,7 @@ using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using ToDoList.Data;
 
@@ -11,9 +12,11 @@ using ToDoList.Data;
 namespace todolist.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    partial class ApplicationDbContextModelSnapshot : ModelSnapshot
+    [Migration("20251121021142_AddCategorySystem")]
+    partial class AddCategorySystem
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -226,39 +229,6 @@ namespace todolist.Migrations
                     b.ToTable("AspNetUsers", (string)null);
                 });
 
-            modelBuilder.Entity("ToDoList.Models.AuditLog", b =>
-                {
-                    b.Property<int>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("int");
-
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
-
-                    b.Property<string>("Action")
-                        .IsRequired()
-                        .HasMaxLength(50)
-                        .HasColumnType("nvarchar(50)");
-
-                    b.Property<string>("Changes")
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<DateTime>("Timestamp")
-                        .HasColumnType("datetime2");
-
-                    b.Property<int>("ToDoItemId")
-                        .HasColumnType("int");
-
-                    b.Property<string>("UserId")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(450)");
-
-                    b.HasKey("Id");
-
-                    b.HasIndex("ToDoItemId", "UserId");
-
-                    b.ToTable("AuditLogs");
-                });
-
             modelBuilder.Entity("ToDoList.Models.Category", b =>
                 {
                     b.Property<int>("Id")
@@ -315,12 +285,6 @@ namespace todolist.Migrations
                     b.Property<DateTime?>("DueDate")
                         .HasColumnType("datetime2");
 
-                    b.Property<bool>("IsStarred")
-                        .HasColumnType("bit");
-
-                    b.Property<int?>("Order")
-                        .HasColumnType("int");
-
                     b.Property<int>("Priority")
                         .HasColumnType("int");
 
@@ -346,10 +310,6 @@ namespace todolist.Migrations
                     b.HasIndex("UserId", "CategoryId");
 
                     b.HasIndex("UserId", "DueDate");
-
-                    b.HasIndex("UserId", "IsStarred");
-
-                    b.HasIndex("UserId", "Order");
 
                     b.HasIndex("UserId", "Status", "Priority");
 
@@ -405,17 +365,6 @@ namespace todolist.Migrations
                         .HasForeignKey("UserId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
-                });
-
-            modelBuilder.Entity("ToDoList.Models.AuditLog", b =>
-                {
-                    b.HasOne("ToDoList.Models.ToDoItem", "ToDoItem")
-                        .WithMany()
-                        .HasForeignKey("ToDoItemId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.Navigation("ToDoItem");
                 });
 
             modelBuilder.Entity("ToDoList.Models.Category", b =>

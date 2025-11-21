@@ -27,6 +27,7 @@ namespace ToDoList.Controllers
         private readonly IValidationService _validationService;
         private readonly IExportService _exportService;
         private readonly INotificationService _notificationService;
+        private readonly IAuditService _auditService;
         private readonly UserManager<ApplicationUser> _userManager;
         private readonly ILogger<ToDoController> _logger;
 
@@ -39,6 +40,7 @@ namespace ToDoList.Controllers
             IValidationService validationService,
             IExportService exportService,
             INotificationService notificationService,
+            IAuditService auditService,
             UserManager<ApplicationUser> userManager,
             ILogger<ToDoController> logger)
         {
@@ -47,6 +49,7 @@ namespace ToDoList.Controllers
             _validationService = validationService;
             _exportService = exportService;
             _notificationService = notificationService;
+            _auditService = auditService;
             _userManager = userManager;
             _logger = logger;
         }
@@ -77,7 +80,8 @@ namespace ToDoList.Controllers
             string sortBy = "CreatedAt",
             string sortOrder = "Descending",
             bool? isCompleted = null,
-            int? daysUntilDue = null)
+            int? daysUntilDue = null,
+            int? categoryId = null)
         {
             try
             {
@@ -102,7 +106,8 @@ namespace ToDoList.Controllers
                     SortBy = sortBy,
                     SortOrder = sortOrder,
                     IsCompleted = isCompleted,
-                    DaysUntilDue = daysUntilDue
+                    DaysUntilDue = daysUntilDue,
+                    CategoryId = categoryId
                 };
 
                 // Áp dụng bộ lọc
@@ -143,9 +148,18 @@ namespace ToDoList.Controllers
         /// Hiển thị form tạo mới công việc
         /// </summary>
         [HttpGet("create")]
-        public IActionResult Create()
+        public async Task<IActionResult> Create()
         {
-            return View(new ToDoItemViewModel());
+            var user = await _userManager.GetUserAsync(User);
+            var categoryService = HttpContext.RequestServices.GetService(typeof(ICategoryService)) as ICategoryService;
+            var categories = user != null && categoryService != null
+                ? (await categoryService.GetCategoriesAsync(user.Id)).ToList()
+                : new List<Category>();
+            var vm = new ToDoItemViewModel
+            {
+                Categories = categories
+            };
+            return View(vm);
         }
 
         /// <summary>
@@ -200,9 +214,12 @@ namespace ToDoList.Controllers
                 };
 
                 // Lưu vào cơ sở dữ liệu thông qua service
-                await _toDoService.CreateAsync(toDoItem);
+                var created = await _toDoService.CreateAsync(toDoItem);
 
                 _logger.LogInformation($"Người dùng {user.Email} tạo công việc: {model.Title}");
+
+                // Ghi audit log cho hành động tạo
+                await _auditService.LogAsync(created.Id, user.Id, "Create", created);
 
                 TempData["SuccessMessage"] = "Công việc đã được tạo thành công!";
                 return RedirectToAction("Index");
@@ -226,21 +243,23 @@ namespace ToDoList.Controllers
         {
             try
             {
-                // Lấy thông tin người dùng hiện tại
                 var user = await _userManager.GetUserAsync(User);
                 if (user == null)
                 {
                     return NotFound("Không tìm thấy người dùng");
                 }
 
-                // Lấy công việc từ cơ sở dữ liệu
                 var toDoItem = await _toDoService.GetByIdAsync(id, user.Id);
                 if (toDoItem == null)
                 {
                     return NotFound("Không tìm thấy công việc");
                 }
 
-                // Chuyển đổi sang view model
+                var categoryService = HttpContext.RequestServices.GetService(typeof(ICategoryService)) as ICategoryService;
+                var categories = categoryService != null
+                    ? (await categoryService.GetCategoriesAsync(user.Id)).ToList()
+                    : new List<Category>();
+
                 var model = new ToDoItemViewModel
                 {
                     Id = toDoItem.Id,
@@ -248,7 +267,9 @@ namespace ToDoList.Controllers
                     Description = toDoItem.Description,
                     Status = toDoItem.Status,
                     Priority = toDoItem.Priority,
-                    DueDate = toDoItem.DueDate
+                    DueDate = toDoItem.DueDate,
+                    CategoryId = toDoItem.CategoryId,
+                    Categories = categories
                 };
 
                 return View(model);
@@ -315,6 +336,17 @@ namespace ToDoList.Controllers
                     return NotFound("Không tìm thấy công việc");
                 }
 
+                // Lưu snapshot trước khi thay đổi
+                var before = new
+                {
+                    toDoItem.Id,
+                    toDoItem.Title,
+                    toDoItem.Description,
+                    toDoItem.Status,
+                    toDoItem.Priority,
+                    toDoItem.DueDate
+                };
+
                 // Cập nhật thông tin
                 toDoItem.Title = model.Title;
                 toDoItem.Description = model.Description;
@@ -323,9 +355,25 @@ namespace ToDoList.Controllers
                 toDoItem.DueDate = model.DueDate;
 
                 // Lưu thay đổi
-                await _toDoService.UpdateAsync(toDoItem);
+                var updateResult = await _toDoService.UpdateAsync(toDoItem);
 
                 _logger.LogInformation($"Người dùng {user.Email} cập nhật công việc: {model.Title}");
+
+                if (updateResult)
+                {
+                    // Ghi audit log cho hành động cập nhật - lưu before/after
+                    var after = new
+                    {
+                        toDoItem.Id,
+                        toDoItem.Title,
+                        toDoItem.Description,
+                        toDoItem.Status,
+                        toDoItem.Priority,
+                        toDoItem.DueDate
+                    };
+
+                    await _auditService.LogAsync(toDoItem.Id, user.Id, "Update", new { before, after });
+                }
 
                 TempData["SuccessMessage"] = "Công việc đã được cập nhật thành công!";
                 return RedirectToAction("Index");
@@ -356,12 +404,23 @@ namespace ToDoList.Controllers
                     return Json(new { success = false, message = "Không tìm thấy người dùng" });
                 }
 
+                // Lấy công việc trước khi xóa để log
+                var itemToDelete = await _toDoService.GetByIdAsync(id, user.Id);
+                if (itemToDelete == null)
+                {
+                    return Json(new { success = false, message = "Không tìm thấy công việc" });
+                }
+
                 // Xóa công việc
                 var result = await _toDoService.DeleteAsync(id, user.Id);
 
                 if (result)
                 {
                     _logger.LogInformation($"Người dùng {user.Email} xóa công việc {id}");
+
+                    // Ghi audit log cho hành động xóa
+                    await _auditService.LogAsync(itemToDelete.Id, user.Id, "Delete", itemToDelete);
+
                     TempData["SuccessMessage"] = "Công việc đã được xóa thành công!";
                     return Json(new { success = true, message = "Xóa thành công" });
                 }
@@ -407,6 +466,170 @@ namespace ToDoList.Controllers
                 _logger.LogError(ex, $"Lỗi khi lấy công việc {id}");
                 TempData["ErrorMessage"] = "Có lỗi xảy ra";
                 return RedirectToAction("Index");
+            }
+        }
+
+        /// <summary>
+        /// Hiển thị lịch sử thay đổi (Audit Log) cho một công việc
+        /// </summary>
+        /// <param name="id">ID của công việc</param>
+        [HttpGet("audit/{id}")]
+        public async Task<IActionResult> Audit(int id)
+        {
+            try
+            {
+                var user = await _userManager.GetUserAsync(User);
+                if (user == null)
+                {
+                    return NotFound("Không tìm thấy người dùng");
+                }
+
+                // Kiểm tra quyền sở hữu công việc
+                var item = await _toDoService.GetByIdAsync(id, user.Id);
+                if (item == null)
+                {
+                    return NotFound("Không tìm thấy công việc");
+                }
+
+                var logs = await _auditService.GetLogsForItemAsync(id, user.Id);
+
+                return View(logs);
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, $"Lỗi khi lấy audit log cho công việc {id}");
+                TempData["ErrorMessage"] = "Có lỗi xảy ra khi tải lịch sử thay đổi";
+                return RedirectToAction("Index");
+            }
+        }
+
+        /// <summary>
+        /// API trả thống kê (số công việc theo trạng thái, theo ngày trong 30 ngày gần nhất)
+        /// </summary>
+        [HttpGet("api/stats")]
+        [Produces("application/json")]
+        public async Task<IActionResult> ApiStats()
+        {
+            try
+            {
+                var user = await _userManager.GetUserAsync(User);
+                if (user == null)
+                    return Json(new { success = false, message = "Không tìm thấy người dùng" });
+
+                var allItems = await _toDoService.GetAllByUserIdAsync(user.Id);
+
+                var byStatus = allItems.GroupBy(t => t.Status)
+                    .Select(g => new { status = g.Key.ToString(), count = g.Count() })
+                    .ToList();
+
+                var last30 = DateTime.UtcNow.Date.AddDays(-29);
+                var byDay = allItems
+                    .Where(t => t.CreatedAt.Date >= last30)
+                    .GroupBy(t => t.CreatedAt.Date)
+                    .Select(g => new { date = g.Key.ToString("yyyy-MM-dd"), count = g.Count() })
+                    .ToList();
+
+                return Json(new { success = true, byStatus, byDay });
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "Lỗi khi lấy thống kê");
+                return Json(new { success = false, message = "Có lỗi" });
+            }
+        }
+
+        /// <summary>
+        /// View cho thống kê (Chart.js)
+        /// </summary>
+        [HttpGet("statistics-chart")]
+        public IActionResult StatisticsChart()
+        {
+            return View();
+        }
+
+        /// <summary>
+        /// View Calendar
+        /// </summary>
+        [HttpGet("calendar")]
+        public IActionResult Calendar()
+        {
+            return View();
+        }
+
+        /// <summary>
+        /// API trả các công việc dưới dạng sự kiện cho calendar
+        /// </summary>
+        [HttpGet("api/events")]
+        [Produces("application/json")]
+        public async Task<IActionResult> ApiEvents()
+        {
+            try
+            {
+                var user = await _userManager.GetUserAsync(User);
+                if (user == null)
+                    return Json(new { success = false, events = new object[0] });
+
+                var allItems = await _toDoService.GetAllByUserIdAsync(user.Id);
+
+                var events = allItems.Select(t => new
+                {
+                    id = t.Id,
+                    title = t.Title,
+                    start = t.DueDate?.ToString("yyyy-MM-dd"),
+                    allDay = true,
+                    url = Url.Action("Edit", "ToDo", new { id = t.Id })
+                });
+
+                return Json(new { success = true, events });
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "Lỗi khi lấy events");
+                return Json(new { success = false, events = new object[0] });
+            }
+        }
+
+        /// <summary>
+        /// Cập nhật thứ tự công việc (AJAX)
+        /// </summary>
+        [HttpPost("api/update-order")]
+        public async Task<IActionResult> ApiUpdateOrder([FromBody] List<int> orderedIds)
+        {
+            try
+            {
+                var user = await _userManager.GetUserAsync(User);
+                if (user == null)
+                    return Json(new { success = false, message = "Không tìm thấy người dùng" });
+
+                await _toDoService.UpdateOrderAsync(orderedIds, user.Id);
+                return Json(new { success = true });
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "Lỗi khi cập nhật order");
+                return Json(new { success = false, message = "Có lỗi" });
+            }
+        }
+
+        /// <summary>
+        /// Toggle star (AJAX)
+        /// </summary>
+        [HttpPost("api/toggle-star/{id}")]
+        public async Task<IActionResult> ApiToggleStar(int id)
+        {
+            try
+            {
+                var user = await _userManager.GetUserAsync(User);
+                if (user == null)
+                    return Json(new { success = false });
+
+                var result = await _toDoService.ToggleStarAsync(id, user.Id);
+                return Json(new { success = result });
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "Lỗi toggle star");
+                return Json(new { success = false });
             }
         }
 

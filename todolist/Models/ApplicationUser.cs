@@ -20,6 +20,11 @@ namespace ToDoList.Models
         public virtual ICollection<ToDoItem> ToDoItems { get; set; } = new List<ToDoItem>();
 
         /// <summary>
+        /// Danh sách danh mục của người dùng
+        /// </summary>
+        public virtual ICollection<Category> Categories { get; set; } = new List<Category>();
+
+        /// <summary>
         /// Ngày tạo tài khoản
         /// </summary>
         public DateTime CreatedAt { get; set; } = DateTime.UtcNow;

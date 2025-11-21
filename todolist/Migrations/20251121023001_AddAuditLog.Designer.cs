@@ -3,6 +3,7 @@ using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using ToDoList.Data;
 
@@ -11,9 +12,11 @@ using ToDoList.Data;
 namespace todolist.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    partial class ApplicationDbContextModelSnapshot : ModelSnapshot
+    [Migration("20251121023001_AddAuditLog")]
+    partial class AddAuditLog
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -315,12 +318,6 @@ namespace todolist.Migrations
                     b.Property<DateTime?>("DueDate")
                         .HasColumnType("datetime2");
 
-                    b.Property<bool>("IsStarred")
-                        .HasColumnType("bit");
-
-                    b.Property<int?>("Order")
-                        .HasColumnType("int");
-
                     b.Property<int>("Priority")
                         .HasColumnType("int");
 
@@ -346,10 +343,6 @@ namespace todolist.Migrations
                     b.HasIndex("UserId", "CategoryId");
 
                     b.HasIndex("UserId", "DueDate");
-
-                    b.HasIndex("UserId", "IsStarred");
-
-                    b.HasIndex("UserId", "Order");
 
                     b.HasIndex("UserId", "Status", "Priority");
 

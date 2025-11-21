@@ -1,0 +1,122 @@
+@using ToDoList.Models
+@model IEnumerable<Category>
+
+@{
+    ViewData["Title"] = "Quản lý Danh mục";
+}
+
+<div class="container mt-4">
+    <div class="row mb-4">
+        <div class="col-md-8">
+            <h2>
+                <i class="fas fa-folder"></i> Danh mục của tôi
+            </h2>
+        </div>
+        <div class="col-md-4 text-end">
+            <a href="@Url.Action("Create", "Category")" class="btn btn-primary">
+                <i class="fas fa-plus"></i> Tạo Danh mục Mới
+            </a>
+        </div>
+    </div>
+
+    @if (TempData["SuccessMessage"] != null)
+    {
+        <div class="alert alert-success alert-dismissible fade show" role="alert">
+            <i class="fas fa-check-circle"></i> @TempData["SuccessMessage"]
+            <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+        </div>
+    }
+
+    @if (TempData["ErrorMessage"] != null)
+    {
+        <div class="alert alert-danger alert-dismissible fade show" role="alert">
+            <i class="fas fa-exclamation-circle"></i> @TempData["ErrorMessage"]
+            <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+        </div>
+    }
+
+    <div class="row">
+        @if (!Model.Any())
+        {
+            <div class="col-12">
+                <div class="alert alert-info" role="alert">
+                    <i class="fas fa-info-circle"></i>
+                    <strong>Không có danh mục nào!</strong>
+                    <p class="mb-0">Bạn chưa tạo danh mục nào. <a href="@Url.Action("Create", "Category")">Tạo danh mục đầu tiên</a></p>
+                </div>
+            </div>
+        }
+        else
+        {
+            @foreach (var category in Model)
+            {
+                <div class="col-md-6 col-lg-4 mb-3">
+                    <div class="card category-card h-100" style="border-left: 5px solid @category.Color">
+                        <div class="card-header" style="background-color: @category.Color; color: white;">
+                            <div class="d-flex justify-content-between align-items-center">
+                                <h6 class="mb-0">
+                                    <i class="fas fa-folder"></i> @category.Name
+                                </h6>
+                                <div class="dropdown">
+                                    <button class="btn btn-sm btn-light" type="button" data-bs-toggle="dropdown">
+                                        <i class="fas fa-ellipsis-v"></i>
+                                    </button>
+                                    <ul class="dropdown-menu dropdown-menu-end">
+                                        <li>
+                                            <a class="dropdown-item" href="@Url.Action("Edit", "Category", new { id = category.Id })">
+                                                <i class="fas fa-edit"></i> Chỉnh sửa
+                                            </a>
+                                        </li>
+                                        <li>
+                                            <form method="post" action="@Url.Action("Delete", "Category", new { id = category.Id })" style="display: inline;">
+                                                @Html.AntiForgeryToken()
+                                                <button type="submit" class="dropdown-item text-danger" onclick="return confirm('Bạn có chắc chắn muốn xóa danh mục này?');">
+                                                    <i class="fas fa-trash"></i> Xóa
+                                                </button>
+                                            </form>
+                                        </li>
+                                    </ul>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="card-body">
+                            @if (!string.IsNullOrEmpty(category.Description))
+                            {
+                                <p class="card-text small text-muted">@category.Description</p>
+                            }
+                            else
+                            {
+                                <p class="card-text small text-muted text-secondary">Không có mô tả</p>
+                            }
+                            <small class="text-muted">
+                                Tạo lúc: @category.CreatedAt.ToString("dd/MM/yyyy HH:mm")
+                            </small>
+                        </div>
+                        <div class="card-footer bg-light">
+                            <a href="@Url.Action("Index", "ToDo", new { categoryId = category.Id })" class="btn btn-sm btn-outline-primary w-100">
+                                <i class="fas fa-list"></i> Xem Công việc
+                            </a>
+                        </div>
+                    </div>
+                </div>
+            }
+        }
+    </div>
+</div>
+
+<style>
+.category-card {
+    transition: all 0.3s ease;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+}
+
+.category-card:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 4px 8px rgba(0,0,0,0.15);
+}
+
+.category-card .card-header {
+    padding: 1rem;
+    border-radius: 0;
+}
+</style>

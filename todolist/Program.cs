@@ -45,6 +45,11 @@ builder.Services.AddScoped<IExportService, ExportService>();
 // Đăng ký INotificationService cho hệ thống thông báo
 builder.Services.AddScoped<INotificationService, NotificationService>();
 
+// Đăng ký ICategoryService cho hệ thống danh mục
+builder.Services.AddScoped<ICategoryService, CategoryService>();
+// Đăng ký IAuditService cho lưu lịch sử thay đổi
+builder.Services.AddScoped<IAuditService, AuditService>();
+
 // ===== Cấu hình Controllers và Views =====
 builder.Services.AddControllersWithViews();
 
